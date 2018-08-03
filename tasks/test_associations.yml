@@ -1,0 +1,31 @@
+---
+    - name: check for instance profile associations
+      become: no
+      local_action: |
+        shell aws ec2 describe-iam-instance-profile-associations \
+        --filters Name=instance-id,Values={{ ansible_ec2_instance_id }}
+      register: assoc_result
+
+    - set_fact:
+        instance_profile_assoc: "{{ assoc_result.stdout | from_json }}"
+
+    - set_fact:
+        instance_profile_name: "{{ instance_profile_assoc.IamInstanceProfileAssociations[0].IamInstanceProfile.Arn | basename }}"
+      when: instance_profile_assoc.IamInstanceProfileAssociations[0] is defined
+
+    - debug:
+        var: inventory_hostname
+
+    - set_fact:
+        instance_profile_name_for_cloudwatch: "{{ permission_name }}_instance_profile"
+
+    - fail:
+        msg: >
+            host {{ inventory_hostname }} is associated with instance profile
+            named {{ instance_profile_name }}, expected {{ instance_profile_name_for_cloudwatch }}
+      when: instance_profile_name is defined and instance_profile_name != instance_profile_name_for_cloudwatch
+
+    - debug:
+        var: instance_profile_name
+
+

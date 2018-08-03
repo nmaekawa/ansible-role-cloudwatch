@@ -1,0 +1,44 @@
+---
+
+    - name: copy shared scripts
+      template:
+        src: "{{ item }}"
+        dest: "{{ org_rootdir }}/bin/{{ item | basename }}"
+        owner: "root"
+        group: "root"
+        mode: "0775"
+      with_fileglob:
+        - "../templates/*_shared.sh"
+
+    - name: copy disk-free scripts
+      template:
+        src: "{{ item }}"
+        dest: "{{ org_rootdir }}/bin/{{ item | basename }}"
+        owner: "root"
+        group: "root"
+        mode: "0775"
+      with_fileglob:
+        - "../templates/*disk_free*.sh"
+
+    - name: copy response_time scripts
+      template:
+        src: "{{ item }}"
+        dest: "{{ org_rootdir }}/bin/{{ item | basename }}"
+        owner: "root"
+        group: "root"
+        mode: "0775"
+      with_fileglob:
+        - "../templates/*response_time*.sh"
+      when: "'tag_webserver' in group_names or 'tag_webserver_candidate' in group_names"
+
+    - name: copy make_jwt script
+      template:
+        src: "../templates/make_jwt.py"
+        dest: "{{ org_rootdir }}/bin/make_jwt.py"
+        owner: "root"
+        group: "root"
+        mode: "0775"
+      when: "'tag_webserver' in group_names or 'tag_webserver_candidate' in group_names"
+
+
+

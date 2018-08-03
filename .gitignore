@@ -1,0 +1,4 @@
+.vagrant
+roles/external
+*.gz
+*.tar
