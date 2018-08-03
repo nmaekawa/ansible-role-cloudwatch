@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. {{ org_rootdir }}/bin/custom_metrics_shared.sh
+. {{ cloudwatch_user_home }}/bin/custom_metrics_shared.sh
 
 filesystem_type="$1"
 metric_name=""
@@ -23,3 +23,7 @@ for partition_mount in $local_file_systems; do
       --value="$percent_free" \
       --unit Percent
 done
+
+
+
+

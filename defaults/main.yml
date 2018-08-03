@@ -1,0 +1,8 @@
+---
+
+permission_name: "ec2_cloudwatch_put_read_list"
+cloudwatch_user: "root"
+
+
+
+

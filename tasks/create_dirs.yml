@@ -1,25 +1,12 @@
 ---
 
-    - name: ensure hx global bin folder
+    - name: ensure cloudwatch_user bin folder
       file:
-        path: "{{ org_rootdir }}/bin"
-        owner: "root"
-        group: "root"
-        mode: 0755
-        state: directory
+          path: "{{ cloudwatch_user_home }}/bin"
+          owner: "root"
+          group: "root"
+          mode: 0755
+          state: directory
 
-    - name: ensure tmp global bin folder
-      file:
-        path: "{{ org_rootdir }}/tmp"
-        owner: "root"
-        group: "root"
-        mode: 0755
-        state: directory
 
-    - name: ensure tmp cloudwatch folder
-      file:
-        path: "{{ org_rootdir }}/tmp/cloudwatch"
-        owner: "cloudwatch"
-        group: "cloudwatch"
-        mode: 0755
-        state: directory
+

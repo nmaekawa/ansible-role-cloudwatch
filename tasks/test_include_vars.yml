@@ -1,4 +1,0 @@
----
-
-    - debug:
-        var: ebs_mountpoint

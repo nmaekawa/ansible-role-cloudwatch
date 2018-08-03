@@ -6,4 +6,14 @@
     - set_fact:
         instance_profile_name_for_cloudwatch: "{{ permission_name }}_instance_profile"
 
+    - name: set home dir for cloudwatch_user
+      become_user: '{{ cloudwatch_user }}'
+      shell: echo "$HOME"
+      register:
+          cloudwatch_home_output
+
+    - set_fact:
+        cloudwatch_user_home: '{{ cloudwatch_home_output.stdout }}'
+
+
 
