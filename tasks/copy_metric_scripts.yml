@@ -4,8 +4,8 @@
       template:
         src: "{{ item }}"
         dest: "{{ cloudwatch_user_home }}/bin/{{ item | basename }}"
-        owner: "root"
-        group: "root"
+        owner: "{{ cloudwatch_user }}"
+        group: "{{ cloudwatch_user }}"
         mode: "0775"
       with_fileglob:
         - "../templates/*_shared.sh"
@@ -14,8 +14,8 @@
       template:
         src: "{{ item }}"
         dest: "{{ cloudwatch_user_home }}/bin/{{ item | basename }}"
-        owner: "root"
-        group: "root"
+        owner: "{{ cloudwatch_user }}"
+        group: "{{ cloudwatch_user }}"
         mode: "0775"
       with_fileglob:
         - "../templates/*disk_free*.sh"
