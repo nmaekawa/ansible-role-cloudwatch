@@ -2,8 +2,8 @@
 galaxy_info:
   author: nmaekawa
   description: cloudwatch metrics for disk % free
-  license: Apache2
-  min_ansible_version: 2.4
+  license: MIT
+  min_ansible_version: 2.5
   platforms:
   - name: Ubuntu
     versions:

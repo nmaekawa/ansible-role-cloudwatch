@@ -1,18 +1,20 @@
 cloudwatch
 =========
-Simplest cloudwatch metrics for free disk percentage.
+Simplest cloudwatch metrics scripts for free disk percentage.
 
 
 requirements
 ------------
 
-`cloudwatch_user` where the cronjob to send disk metrics is registered must
-already exist.
+`cloudwatch_user` user that register cronjobs to send disk metrics; user must
+exist and have a home dir. Cronjob scripts are copied to ~cloudwatch_user/bin;
+~cloudwatch_user/bin directory is created if doesn't already exists.
 
-this role creates a policy for instance-profile to allow instance to post
-metrics to cloudwach service. The policy uses `permission_name` as the prefix
-to name the policy.
+`cloudwatch_namespace` is optional and the default value is "CustomMetrics".
 
+This role does not grant any permission to the instance to access cloudwatch
+service. For that check [ansible-role-iam-instance-profile]
+(https://github.com/nmaekawa/ansible-role-iam-instance-profile)
 
 
 example playbook
@@ -23,7 +25,7 @@ example playbook
           name: ansible-role-cloudwatch
       vars:
           cloudwatch_user: myuser
-          permission_name: cloudwatch_prefix
+          cloudwatch_namespace: "MyOrganization/CustomMetricsForServiceX"
 
 
 license
