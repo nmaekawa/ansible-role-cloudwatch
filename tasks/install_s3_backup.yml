@@ -6,33 +6,33 @@
 # superpowers to be moved and compressed.
 #
 
-    - include_tasks: set_facts.yml
+    - name: gather ec2 facts
+      ec2_metadata_facts:
 
     - name: copy shared script
       template:
         src: ../templates/custom_metrics_shared.sh
-        dest: "{{ cloudwatch_user_home }}/bin"
-        owner: "{{ cloudwatch_user }}"
-        group: "{{ cloudwatch_user }}"
+        dest: "{{ script_install_dir }}"
+        owner: root
         mode: "0775"
 
     - name: copy s3 backup script
       template:
         src: ../templates/cp_file_to_s3.sh
-        dest: "{{ cloudwatch_user_home }}/bin"
-        owner: "{{ cloudwatch_user }}"
-        group: "{{ cloudwatch_user }}"
+        dest: "{{ script_install_dir }}"
+        owner: root
         mode: "0775"
 
     - name: set cronjob for s3 backup
       cron:
         name: "s3 backup for {{ item }}"
+        user: "{{ cronjob_owner }}"
         special_time: daily
         state: present
         job: >
-            {{ cloudwatch_user_home }}/bin/cp_file_to_s3.sh
+            {{ script_install_dir }}/cp_file_to_s3.sh
             "{{ item }}"
             "{{ s3_backup_bucket_name }}"
-            "{{ s3_backup_prefix }}" 2>&1 | logger
+            "{{ s3_backup_prefix }}" 2>&1 | logger -t "[s3 sync]"
       with_items: "{{ files_to_backup }}"
 

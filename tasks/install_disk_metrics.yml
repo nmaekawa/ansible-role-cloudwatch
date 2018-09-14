@@ -1,27 +1,28 @@
 ---
 
+    - name: gather ec2 facts
+      ec2_metadata_facts:
+
     - name: copy shared script
       template:
         src: custom_metrics_shared.sh
-        dest: "{{ cloudwatch_user_home }}/bin/custom_metrics_shared.sh"
-        owner: "{{ cloudwatch_user }}"
-        group: "{{ cloudwatch_user }}"
+        dest: "{{ script_install_dir }}/custom_metrics_shared.sh"
+        owner: root
         mode: "0775"
 
     - name: copy disk-free script
       template:
         src: disk_free_metric.sh
-        dest: "{{ cloudwatch_user_home }}/bin/disk_free_metric.sh"
-        owner: "{{ cloudwatch_user }}"
-        group: "{{ cloudwatch_user }}"
+        dest: "{{ script_install_dir }}/disk_free_metric.sh"
+        owner: root
         mode: "0775"
 
     - name: set cronjob for disk space
       cron:
         name: "disk_metrics"
-        user: "{{ cloudwatch_user }}"
+        user: "{{ cronjob_owner }}"
         minute: "*/5"
         state: present
         job: >
-            {{ cloudwatch_user_home }}/bin/disk_free_metric.sh "type ext|type xfs" 2>&1 | logger -t cloudwatch_disk_free
+            {{ script_install_dir }}/disk_free_metric.sh "type ext|type xfs" 2>&1 | logger -t "[cloudwatch disk]
 

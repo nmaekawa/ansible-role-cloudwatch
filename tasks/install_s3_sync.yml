@@ -1,15 +1,16 @@
 ---
-    - include_tasks: set_facts.yml
+    - name: gather ec2 facts
+      ec2_metadata_facts:
 
     - name: set cronjob for s3 sync
       cron:
         name: "s3 sync for {{ target_s3_sync_dir }}"
-        user: "{{ cloudwatch_user }}"
+        user: "{{ cronjob_owner }}"
         special_time: daily
         state: present
         job: >
             /usr/bin/aws s3 sync
-                "s3://{{ s3_sync_bucket_name }}/{{ s3_sync_prefix }}"
-                "{{ target_s3_sync_dir }}"
-                2>&1 | logger -t "s3 sync"
+            "s3://{{ s3_sync_bucket_name }}/{{ s3_sync_prefix }}"
+            "{{ target_s3_sync_dir }}"
+            2>&1 | logger -t "[s3 sync]"
 

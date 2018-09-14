@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. {{ cloudwatch_user_home }}/bin/custom_metrics_shared.sh
+. {{ script_install_dir }}/custom_metrics_shared.sh
 
 filesystem_type="$1"
 metric_name=""
