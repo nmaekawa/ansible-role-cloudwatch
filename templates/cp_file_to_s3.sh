@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# compress and transfer local source file to s3 bucket/prefix
+#
+# - always compress
+# - adds "last modification date" as prefix to backup filename
+# - adds ".gz" extension to backup filename
 
 if [ $# -lt 3 ]
 then
@@ -18,32 +23,33 @@ echo "workdir is $WORKDIR"
 
 # get formatted last modification date
 mod_date=$(stat "$SOURCE_FILEPATH" --format="%y" | awk -F"." '{print $1}' |  sed "s/ /T/g" | sed "s/://g")
-target_backup_filename="${mod_date}_${target_filename}.gz"
+target_filename=$(basename $SOURCE_FILEPATH)
 
-if [ -z $mod_date ] || [ -z $target_filename ] || [ -z $target_dir ]
+if [ -z $mod_date ] || [ -z $target_filename ]
 then
     echo "error formatting target backup filename"
     exit 1
 fi
 
+target_backup_filename="${mod_date}_${target_filename}.gz"
 echo "backup filename is $target_backup_filename"
 
 # compress file
 gzip -c $SOURCE_FILEPATH > $WORKDIR/$target_backup_filename
 if [ $? -ne 0 ]; then
-    echo "error compressing: gzip -c $SOURCE_FILEPATH > $WORKDIR/$target_backup_filename"
+    echo "error compressing: gzip -c $SOURCE_FILEPATH > ${WORKDIR}/${target_backup_filename}"
     exit 1
 fi
 
 # copy to s3
 # STANDARD_IA == infrequent access
-aws s3 cp $WORKDIR/$target_backup_filename \
-    s3://$TARGET_S3_BUCKET/$TARGET_S3_PREFIX/$target_backup_filename \
+/usr/bin/aws s3 cp $WORKDIR/$target_backup_filename \
+    s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/${target_backup_filename} \
     --storage-class STANDARD_IA
 if [ $? -ne 0 ]; then
     echo "error cp to s3:" \
-         " aws s3 cp $WORKDIR/$target_backup_filename " \
-         "s3://$TARGET_S3_BUCKET/$TARGET_S3_PREFIX/$target_backup_filename" \
+         " aws s3 cp ${WORKDIR}/${target_backup_filename} " \
+         "s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/$target_backup_filename" \
          "--storage-class STANDARD_IA"
 fi
 

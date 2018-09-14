@@ -1,0 +1,38 @@
+---
+
+#
+# installs cronjob script under cloudwatch_user_home/bin
+# but register the cronjob under root because some log files require
+# superpowers to be moved and compressed.
+#
+
+    - include_tasks: set_facts.yml
+
+    - name: copy shared script
+      template:
+        src: ../templates/custom_metrics_shared.sh
+        dest: "{{ cloudwatch_user_home }}/bin"
+        owner: "{{ cloudwatch_user }}"
+        group: "{{ cloudwatch_user }}"
+        mode: "0775"
+
+    - name: copy s3 backup script
+      template:
+        src: ../templates/cp_file_to_s3.sh
+        dest: "{{ cloudwatch_user_home }}/bin"
+        owner: "{{ cloudwatch_user }}"
+        group: "{{ cloudwatch_user }}"
+        mode: "0775"
+
+    - name: set cronjob for s3 backup
+      cron:
+        name: "s3 backup for {{ item }}"
+        special_time: daily
+        state: present
+        job: >
+            {{ cloudwatch_user_home }}/bin/cp_file_to_s3.sh
+            "{{ item }}"
+            "{{ s3_backup_bucket_name }}"
+            "{{ s3_backup_prefix }}" 2>&1 | logger
+      with_items: "{{ files_to_backup }}"
+

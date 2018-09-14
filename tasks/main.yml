@@ -1,22 +1,6 @@
 ---
-    - fail:
-        msg: "cloudwatch_user is not defined!"
-      when: cloudwatch_user is not defined
-
-    - name: set home dir for cloudwatch_user
-      become_user: '{{ cloudwatch_user }}'
-      shell: echo "$HOME"
-      register:
-          cloudwatch_home_output
-
-    - set_fact:
-        cloudwatch_user_home: '{{ cloudwatch_home_output.stdout }}'
-
-    - name: gather ec2 facts
-      ec2_metadata_facts:
-
+    - include_tasks: set_facts.yml
     - include_tasks: install_packages.yml
     - include_tasks: create_dirs.yml
-    - include_tasks: copy_metric_scripts.yml
-    - include_tasks: set_cronjobs.yml
+    - include_tasks: install_disk_metrics.yml
 

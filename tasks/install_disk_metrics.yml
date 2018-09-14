@@ -3,7 +3,7 @@
     - name: copy shared script
       template:
         src: custom_metrics_shared.sh
-        dest: "{{ cloudwatch_user_home }}/bin/{{ item | basename }}"
+        dest: "{{ cloudwatch_user_home }}/bin/custom_metrics_shared.sh"
         owner: "{{ cloudwatch_user }}"
         group: "{{ cloudwatch_user }}"
         mode: "0775"
@@ -11,7 +11,7 @@
     - name: copy disk-free script
       template:
         src: disk_free_metric.sh
-        dest: "{{ cloudwatch_user_home }}/bin/{{ item | basename }}"
+        dest: "{{ cloudwatch_user_home }}/bin/disk_free_metric.sh"
         owner: "{{ cloudwatch_user }}"
         group: "{{ cloudwatch_user }}"
         mode: "0775"
