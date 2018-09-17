@@ -1,24 +1,68 @@
 #!/bin/bash
 
+#
 # compress and transfer local source file to s3 bucket/prefix
 #
-# - always compress
-# - adds "last modification date" as prefix to backup filename
-# - adds ".gz" extension to backup filename
+# expects to be run in ubuntu; stat command will not work in macos
+#
 
-if [ $# -lt 3 ]
+#
+# functions
+#
+usage()
+{
+    cat << EOF
+usage: $0 --source <path> --s3-bucket <bucket> --s3-prefix <prefix> [--prefix <prefix>] [--workdir <dir>]
+  compress and transfer local source file to s3://bucket/prefix;
+  adds "last modification date" and "prefix" name to final target s3 object name
+
+  --source     fullpath for source to be copied
+  --s3-bucket  s3 bucket name of copy target
+  --s3-prefix  s3 prefix for copy target
+  --prefix     optional; prefix to be added to final target s3 object name
+  --workdir    optional, defaults to /tmp; path to dir where source file will be compressed
+
+EOF
+}
+
+WORKDIR="/tmp"
+
+while [ "$1" != "" ]; do
+    case $1 in
+        --source )          shift
+                            SOURCE_FILEPATH=$1
+                            ;;
+        --s3-bucket )       shift
+                            TARGET_S3_BUCKET=$1
+                            ;;
+        --s3-prefix )       shift
+                            TARGET_S3_PREFIX=$1
+                            ;;
+        --prefix )          shift
+                            TARGET_FILE_PREFIX=$1
+                            ;;
+        --workdir )         shift
+                            WORKDIR=$1
+                            ;;
+        -h | --help )       usage
+                            exit
+                            ;;
+        * )                 usage
+                            exit 1
+    esac
+    shift
+done
+
+if [ -z $SOURCE_FILEPATH ] || [ -z $TARGET_S3_BUCKET ] || [ -z $TARGET_S3_PREFIX ]
 then
-    echo "$0 <source_filepath> <target_s3_bucket> <target_s3_prefix> <work_dir>"
+    usage
     exit 1
 fi
-SOURCE_FILEPATH=$1
-TARGET_S3_BUCKET=$2
-TARGET_S3_PREFIX=$3
-WORKDIR=${4:-/tmp}
 
 echo "source filepath is $SOURCE_FILEPATH"
 echo "target s3 bucket is $TARGET_S3_BUCKET"
 echo "target s3 prefix is $TARGET_S3_PREFIX"
+echo "target file prefix is $TARGET_FILE_PREFIX"
 echo "workdir is $WORKDIR"
 
 # get formatted last modification date
@@ -31,7 +75,11 @@ then
     exit 1
 fi
 
-target_backup_filename="${mod_date}_${target_filename}.gz"
+if [ -z $TARGET_FILE_PREFIX ]; then
+    target_backup_filename="${mod_date}_${target_filename}.gz"
+else
+    target_backup_filename="${mod_date}_${TARGET_FILE_PREFIX}_${target_filename}.gz"
+fi
 echo "backup filename is $target_backup_filename"
 
 # compress file

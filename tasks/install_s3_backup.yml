@@ -31,8 +31,10 @@
         state: present
         job: >
             {{ script_install_dir }}/cp_file_to_s3.sh
-            "{{ item }}"
-            "{{ s3_backup_bucket_name }}"
-            "{{ s3_backup_prefix }}" 2>&1 | logger -t "[s3 sync]"
+            --source "{{ item }}"
+            --s3-bucket "{{ s3_backup_bucket_name }}"
+            --s3-prefix "{{ s3_backup_prefix }}"
+            --prefix "{{ file_backup_prefix }}"
+            2>&1 | logger -t "[s3 backup]"
       with_items: "{{ files_to_backup }}"
 
