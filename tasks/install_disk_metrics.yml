@@ -24,5 +24,5 @@
         minute: "*/5"
         state: present
         job: >
-            {{ script_install_dir }}/disk_free_metric.sh "type ext|type xfs" 2>&1 | logger -t "[cloudwatch disk]
+            {{ script_install_dir }}/disk_free_metric.sh "type ext|type xfs" 2>&1 | logger -t "[cloudwatch disk]"
 
