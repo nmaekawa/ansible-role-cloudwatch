@@ -67,6 +67,7 @@ echo "workdir is $WORKDIR"
 
 # get formatted last modification date
 mod_date=$(stat "$SOURCE_FILEPATH" --format="%y" | awk -F"." '{print $1}' |  sed "s/ /T/g" | sed "s/://g")
+date_prefix=$(echo mod_date | awk -F"T" '{print $1}')
 target_filename=$(basename $SOURCE_FILEPATH)
 
 if [ -z $mod_date ] || [ -z $target_filename ]
@@ -92,12 +93,12 @@ fi
 # copy to s3
 # STANDARD_IA == infrequent access
 /usr/bin/aws s3 cp $WORKDIR/$target_backup_filename \
-    s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/${target_backup_filename} \
+    s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/${date_prefix}/${target_backup_filename} \
     --storage-class STANDARD_IA
 if [ $? -ne 0 ]; then
     echo "error cp to s3:" \
          " aws s3 cp ${WORKDIR}/${target_backup_filename} " \
-         "s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/$target_backup_filename" \
+         "s3://${TARGET_S3_BUCKET}/${TARGET_S3_PREFIX}/$date_prefix/$target_backup_filename" \
          "--storage-class STANDARD_IA"
 fi
 
