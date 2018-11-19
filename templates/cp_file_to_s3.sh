@@ -67,7 +67,7 @@ echo "workdir is $WORKDIR"
 
 # get formatted last modification date
 mod_date=$(stat "$SOURCE_FILEPATH" --format="%y" | awk -F"." '{print $1}' |  sed "s/ /T/g" | sed "s/://g")
-date_prefix=$(echo mod_date | awk -F"T" '{print $1}')
+date_prefix=$(echo $mod_date | awk -F"T" '{print $1}')
 target_filename=$(basename $SOURCE_FILEPATH)
 
 if [ -z $mod_date ] || [ -z $target_filename ]
