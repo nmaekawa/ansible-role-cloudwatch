@@ -1,0 +1,38 @@
+---
+#
+# install cronjobs that all ec2 instances should have:
+# - disk space metrics for production
+# - syslog transfer to s3
+#
+
+    - name: create user 'cloudwatch'
+      user:
+        name: cloudwatch
+        password: '!'  # disable login
+
+
+    - name: set cronjob for disk space
+      cron:
+        name: "disk_metrics"
+        user: cloudwatch
+        minute: "*/5"
+        state: present
+        job: >
+            {{ script_install_dir }}/disk_free_metric.sh "type ext|type xfs" 2>&1 | logger -t "[cloudwatch disk]"
+
+
+    - name: set cronjob for s3 syslog backup
+      cron:
+        name: "s3 backup for syslog.1"
+        user: root
+        special_time: daily
+        state: present
+        job: >
+            {{ script_install_dir }}/cp_file_to_s3.sh
+            --source "/var/log/syslog.1"
+            --s3-bucket "{{ s3_backup_bucket_name }}"
+            --s3-prefix "{{ s3_backup_prefix }}"
+            --prefix "{{ file_backup_prefix }}"
+            2>&1 | logger -t "[s3 backup]"
+      when: s3_backup_bucket_name is defined and s3_backup_prefix is defined and files_backup_prefix is defined
+

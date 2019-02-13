@@ -1,0 +1,31 @@
+---
+
+    - name: install packages jq, aws
+      apt:
+        name: ['jq', 'awscli']
+        state: present
+
+    - name: gather ec2 facts
+      ec2_metadata_facts:
+
+    - name: copy shared script
+      template:
+        src: ../templates/custom_metrics_shared.sh
+        dest: "{{ script_install_dir }}/custom_metrics_shared.sh"
+        owner: root
+        mode: "0775"
+
+    - name: copy disk-free script
+      template:
+        src: ../templates/disk_free_metric.sh
+        dest: "{{ script_install_dir }}/disk_free_metric.sh"
+        owner: root
+        mode: "0775"
+
+    - name: copy s3 transfer script
+      template:
+        src: ../templates/cp_file_to_s3.sh
+        dest: "{{ script_install_dir }}"
+        owner: root
+        mode: "0775"
+
