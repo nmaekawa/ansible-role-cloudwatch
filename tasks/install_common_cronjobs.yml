@@ -34,5 +34,5 @@
             --s3-prefix "{{ s3_backup_prefix }}"
             --prefix "{{ file_backup_prefix }}"
             2>&1 | logger -t "[s3 backup]"
-      when: s3_backup_bucket_name is defined and s3_backup_prefix is defined and files_backup_prefix is defined
+      when: s3_backup_bucket_name is defined and s3_backup_prefix is defined and file_backup_prefix is defined
 

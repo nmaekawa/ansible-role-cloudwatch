@@ -3,23 +3,11 @@ cloudwatch
 Simplest cloudwatch metrics scripts for free disk percentage.
 
 
-requirements for disk metrics
-------------------------
-
 This role does not grant any permission to the instance to access cloudwatch
 service. For that check [ansible-role-iam-instance-profile]
 (https://github.com/nmaekawa/ansible-role-iam-instance-profile)
 
-`script_install_dir` dir where scripts to put metrics to cloudwatch are copied.
-This dir also will contain scripts for backups, if you run tasks to install
-backups to s3 -- see below. Scripts are owned by root, but executable by all.
-
-`cronjob_owner` user to register the cronjob to put metrics into cloudwatch
-(user is not create by this role!)
-
-`cloudwatch_namespace` aws namespace for metrics being installed. Defaults to
-"Custom Metrics"
-
+It installs disk metrics and syslog backup to s3.
 
 requirements to copy to s3
 --------------------------
@@ -73,9 +61,10 @@ example playbook
         - import_role:
             name: ansible-role-cloudwatch
         vars:
-            script_install_dir: /usr/local/bin
-            cronjob_owner: cloudwatch
             cloudwatch_namespace: "MyOrganization/CustomMetricsForServiceX"
+            s3_backup_bucket_name: "backup"
+            s3_backup_prefix: "prod/project/mytests"
+            file_backup_prefix: "webservice"
 
         # for this example, cronjob_user has to be "root" because it needs
         # permission to access "syslog.1"; and it copies "syslog.1" because it
