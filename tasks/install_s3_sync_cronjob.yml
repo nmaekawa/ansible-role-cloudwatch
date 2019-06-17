@@ -1,11 +1,9 @@
 ---
-    - name: gather ec2 facts
-      ec2_metadata_facts:
 
-    - name: set cronjob for s3 sync
+    - name: set cronjob for s3 sync (s3->local dir)
       cron:
         name: "s3 sync for {{ target_s3_sync_dir }}"
-        user: "{{ cronjob_owner }}"
+        user: "{{ cronjob_owner | mandatory}}"
         special_time: daily
         state: present
         job: >

@@ -1,6 +1,0 @@
----
-
-    - name: install packages jq, aws
-      apt:
-        name: ['jq', 'awscli']
-        state: present
